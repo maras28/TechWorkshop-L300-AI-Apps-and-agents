@@ -49,5 +49,6 @@ jobs:
         run: |
           cd src/app/agents
           pwd
+          echo "${{ secrets.ENV }}" > .env
           ls          
           python shopperAgent_initializer.py
