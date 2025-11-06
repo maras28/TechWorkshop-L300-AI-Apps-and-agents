@@ -30,7 +30,7 @@ jobs:
       
       - name: Create .env file in src directory
         run: |
-          printf '%s' "${{ secrets.ENV }}" > src/.env
+          'echo "$ENV" > src/.env'
         shell: bash
       
       - name: Login to Azure Container Registry
