@@ -48,4 +48,4 @@ jobs:
       - name: Run shopper agent initializer
         run: |
           cd app/
-          python app/agents/shopperAgent_initializer.py
+          python src/app/agents/shopperAgent_initializer.py
