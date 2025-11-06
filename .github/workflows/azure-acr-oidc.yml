@@ -12,6 +12,8 @@ permissions:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: techworkshop
     
     steps:
       - name: Checkout code
@@ -26,7 +28,7 @@ jobs:
       
       - name: Create .env file in src directory
         run: |
-          echo "${{ secrets.ENV }}" > src/.env
+          printf '%s' "${{ secrets.ENV }}" > src/.env
         shell: bash
       
       - name: Login to Azure Container Registry
@@ -35,12 +37,12 @@ jobs:
       
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/techworkshop:${{ github.sha }} -t ${{ secrets.ACR_NAME }}.azurecr.io/techworkshop:latest src/
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/${IMAGE_NAME}:${{ github.sha }} -t ${{ secrets.ACR_NAME }}.azurecr.io/${IMAGE_NAME}:latest src/
       
       - name: Push Docker image to ACR
         run: |
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/techworkshop:${{ github.sha }}
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/techworkshop:latest
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/${IMAGE_NAME}:${{ github.sha }}
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/${IMAGE_NAME}:latest
       
       - name: Cleanup .env file
         if: always()
