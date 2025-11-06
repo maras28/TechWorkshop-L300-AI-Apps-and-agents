@@ -30,9 +30,9 @@ jobs:
       
       - name: Create .env file in src directory
         run: |
-          'echo "${{ secrets.ENV }}" > src/.env'
+           echo "${{ secrets.ENV }}" > src/.env
         shell: bash
-      
+
       - name: Login to Azure Container Registry
         run: |
           az acr login --name ${{ secrets.ACR_NAME }}
