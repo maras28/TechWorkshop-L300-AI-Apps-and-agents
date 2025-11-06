@@ -1,0 +1,50 @@
+name: Build and Push to Azure Container Registry
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: techworkshop
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Azure Login with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      - name: Create .env file in src directory
+        run: |
+          printf '%s' "${{ secrets.ENV }}" > src/.env
+        shell: bash
+      
+      - name: Login to Azure Container Registry
+        run: |
+          az acr login --name ${{ secrets.ACR_NAME }}
+      
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/${IMAGE_NAME}:${{ github.sha }} -t ${{ secrets.ACR_NAME }}.azurecr.io/${IMAGE_NAME}:latest src/
+      
+      - name: Push Docker image to ACR
+        run: |
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/${IMAGE_NAME}:${{ github.sha }}
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/${IMAGE_NAME}:latest
+      
+      - name: Cleanup .env file
+        if: always()
+        run: |
+          rm -f src/.env
