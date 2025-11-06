@@ -12,6 +12,7 @@ permissions:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    environment: test 
     env:
       IMAGE_NAME: techworkshop
     
